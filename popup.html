@@ -15,11 +15,15 @@
         <h2>Create New Group</h2>
         <label>Group Name: <input id="create-group-name-input" type="text" placeholder="Favorite Sites"></label>
         <button id="create-group-button">Create Group</button>
-        <select name="">
+        <select id="create-group-method-select" name="">
             <option value="current-window">Tabs in current window</option>
-            <option value="bookmarks">Manually enter in URLs</option>
+            <option value="manual">Manually enter in URLs</option>
         </select>
         <p id="create-group-info">Group will be made up of all active tabs in the current window.</p>
+
+        <div id="create-group-urls">
+            
+        </div>
     </div>
 
     <script src="popup.js"></script>

@@ -5,6 +5,9 @@ createGroupButton.addEventListener("click", createGroupClickHandler);
 
 var newGroupNameInput = document.getElementById("create-group-name-input");
 
+var createGroupSelect = document.getElementById("create-group-method-select");
+createGroupSelect.addEventListener("change", switchCreateGroupMethod);
+
 initializeGroupsList();
 
 function initializeGroupsList() {
@@ -151,4 +154,31 @@ function removeGroup(event) {
         deserializeGroups(serialized_groups);
         updateGroupsList();
     });
+}
+
+function switchCreateGroupMethod(event) {
+    var options = event.srcElement.options;
+    var selected = options[options.selectedIndex].value;
+
+    var groupUrls = document.getElementById("create-group-urls");
+    var createGroupInfo = document.getElementById("create-group-info");
+
+    switch (selected) {
+        case 'current-window':
+            while (groupUrls.firstChild) {
+                groupUrls.removeChild(groupUrls.firstChild);
+            }
+            createGroupInfo.textContent = "Group will be made up of all active tabs in the current window.";
+            break;
+        case 'manual':
+            var urlInput = document.createElement("input");
+            urlInput.type = "url";
+            urlInput.placeholder = "https://www.google.com";
+
+            groupUrls.appendChild(urlInput);
+
+            createGroupInfo.textContent = "Group will be made up of all URLs entered below.";
+            break;
+        default:
+    }
 }
