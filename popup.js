@@ -18,8 +18,22 @@ function initializeGroupsList() {
     });
 }
 
-function createGroupClickHandler() { 
-    chrome.tabs.query({}, createGroup);
+function createGroupClickHandler() {
+    var createMethod = createGroupSelect.selectedOptions[0].value;
+    switch (createMethod) {
+        case 'current-window':
+            chrome.tabs.query({}, createGroup);
+            break;
+        case 'manual':
+            var tabUrls = [];
+            var groupUrls = document.getElementById("create-group-urls");
+            for (var i = 0; i < groupUrls.childNodes.length - 1; i++) {
+                // make it look like a tab object
+                tabUrls.push({url: groupUrls.childNodes[i].childNodes[0].value});
+            }
+            createGroup(tabUrls);
+    }
+    
 }
 
 function createGroup(tabs) {
@@ -157,8 +171,7 @@ function removeGroup(event) {
 }
 
 function switchCreateGroupMethod(event) {
-    var options = event.srcElement.options;
-    var selected = options[options.selectedIndex].value;
+    var selected = event.srcElement.selectedOptions[0].value;
 
     var groupUrls = document.getElementById("create-group-urls");
     var createGroupInfo = document.getElementById("create-group-info");
@@ -168,7 +181,7 @@ function switchCreateGroupMethod(event) {
             while (groupUrls.firstChild) {
                 groupUrls.removeChild(groupUrls.firstChild);
             }
-            createGroupInfo.textContent = "Group will be made up of all active tabs in the current window.";
+            createGroupInfo.textContent = "Group will be made up of all tabs in the current window.";
             break;
         case 'manual':
             var urlInputDiv = createUrlInput(0);
