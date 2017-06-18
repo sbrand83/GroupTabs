@@ -15,9 +15,16 @@ function createGroupClickHandler() {
 function createGroup(tabs) {
     var name = newGroupNameInput.value;
     newGroupNameInput.value = "";
-    var newGroup = new Group(name, tabs);
+
+    var tab_urls = [];
+    for (var i = 0; i < tabs.length; i++) {
+        tab_urls.push(tabs[i].url);
+    }
+    var newGroup = new Group(name, tab_urls);
     groups.push(newGroup);
     updateGroupsList();
+
+    chrome.storage.sync.set(newGroup.serialize());
 }
 
 function updateGroupsList() {
@@ -61,11 +68,6 @@ function openGroup(event) {
         return;
     }
 
-    var urls = [];
-    var tabs = selectedGroup.getTabs();
-    for (i = 0; i < tabs.length; i++) {
-        urls.push(tabs[i].url);
-    }
-
-    chrome.windows.create({url: urls});
+    var tab_urls = selectedGroup.getTabUrls();
+    chrome.windows.create({url: tab_urls});
 }
