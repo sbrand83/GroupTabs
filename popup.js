@@ -78,24 +78,42 @@ function updateGroupsList() {
 }
 
 function addGroupToList(group) {
-    var groups_list = document.getElementById("groups-list");
-    var group_button = document.createElement("button");
-    var button_text = document.createTextNode(group.getName());
-    group_button.appendChild(button_text);
-    group_button.addEventListener("click", openGroup);
+    var groupRow = document.createElement("div");
+    groupRow.classList.add("group-row");
+
+    var groupsList = document.getElementById("groups-list");
+    var groupName = document.createElement("h3");
+    var groupNameText = document.createTextNode(group.getName());
+    groupName.appendChild(groupNameText);
+    groupName.classList += "group-name";
+
+    var openGroupButton = document.createElement("button");
+    var openGroupButtonText = document.createTextNode("Open");
+    openGroupButton.appendChild(openGroupButtonText);
+    openGroupButton.value = group.getName();
+    openGroupButton.classList += "open-group-button";
+    openGroupButton.addEventListener("click", openGroup);
 
     var removeGroupButton = document.createElement("button");
     var removeGroupButtonText = document.createTextNode("Remove");
     removeGroupButton.appendChild(removeGroupButtonText);
     removeGroupButton.value = group.getName();
+    removeGroupButton.classList += "remove-group-button";
     removeGroupButton.addEventListener("click", removeGroup);
 
-    groups_list.appendChild(group_button);
-    groups_list.appendChild(removeGroupButton);
+    var clearFloat = document.createElement("div");
+    clearFloat.classList += "clear-float";
+
+    groupRow.appendChild(groupName);
+    groupRow.appendChild(removeGroupButton);
+    groupRow.appendChild(openGroupButton);
+    groupRow.appendChild(clearFloat);
+
+    groupsList.appendChild(groupRow);
 }
 
 function openGroup(event) {
-    var groupName = event.srcElement.textContent;
+    var groupName = event.srcElement.value;
     var selectedGroup;
 
     for (var i = 0; i < local_groups.length; i++) {

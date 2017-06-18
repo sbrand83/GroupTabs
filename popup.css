@@ -1,7 +1,56 @@
 body {
-    width: 400px;
+    width: 350px;
+    color: #314166;
 }
 
-#groups-list button {
-    display: block;
+.group-row button {
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.group-row .group-name {
+    display: inline-block;
+    margin: 0px;
+}
+
+.group-row {
+    background-color: #F0F0F0;
+    padding: 5px;
+    margin-bottom: 2px;
+}
+
+h1, h2 {
+    color: #162955;
+}
+
+button {
+    color: white;
+    background-color: #162955;
+    border-style: solid;
+    border-width: 0px;
+    border-color: white;
+    height: 22px;
+    border-radius: 3px;
+}
+
+button:hover {
+    background-color: #0D4C4C;
+}
+
+button.remove-group-button {
+    background-color: #9C0000;
+    float: right;
+    margin-right: 0px;
+}
+
+button.remove-group-button:hover {
+    background-color: #840000;
+}
+
+button.open-group-button {
+    float: right;
+}
+
+div.clear-float {
+    clear: both;
 }
