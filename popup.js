@@ -94,14 +94,14 @@ function addGroupToList(group) {
     var openGroupButtonText = document.createTextNode("Open");
     openGroupButton.appendChild(openGroupButtonText);
     openGroupButton.value = group.getName();
-    openGroupButton.classList += "open-group-button";
+    openGroupButton.classList += "open-group-button float-right";
     openGroupButton.addEventListener("click", openGroup);
 
     var removeGroupButton = document.createElement("button");
     var removeGroupButtonText = document.createTextNode("Remove");
     removeGroupButton.appendChild(removeGroupButtonText);
     removeGroupButton.value = group.getName();
-    removeGroupButton.classList += "remove-group-button";
+    removeGroupButton.classList += "remove-group-button float-right";
     removeGroupButton.addEventListener("click", removeGroup);
 
     var clearFloat = document.createElement("div");
@@ -171,14 +171,35 @@ function switchCreateGroupMethod(event) {
             createGroupInfo.textContent = "Group will be made up of all active tabs in the current window.";
             break;
         case 'manual':
-            var urlInput = document.createElement("input");
-            urlInput.type = "url";
-            urlInput.placeholder = "https://www.google.com";
+            var urlInput = createUrlInput();
+
+            var anotherURLButton = document.createElement("button");
+            var buttonText = document.createTextNode("Add another URL");
+            anotherURLButton.appendChild(buttonText);
+            anotherURLButton.classList += "float-right";
+            anotherURLButton.addEventListener("click", addAnotherUrl);
 
             groupUrls.appendChild(urlInput);
+            groupUrls.appendChild(anotherURLButton);
 
             createGroupInfo.textContent = "Group will be made up of all URLs entered below.";
             break;
         default:
     }
+}
+
+function createUrlInput() {
+    var urlInput = document.createElement("input");
+    urlInput.type = "url";
+    urlInput.placeholder = "https://www.google.com";
+    urlInput.classList += "create-group-url-input";
+    return urlInput;
+}
+
+function addAnotherUrl() {
+    var groupUrls = document.getElementById("create-group-urls");
+    var indexOfAddAnotherUrlButton = groupUrls.children.length - 1;
+    var urlInput = createUrlInput();
+
+    groupUrls.insertBefore(urlInput, groupUrls.children[indexOfAddAnotherUrlButton]);
 }

@@ -39,16 +39,11 @@ button:hover {
 
 button.remove-group-button {
     background-color: #9C0000;
-    float: right;
     margin-right: 0px;
 }
 
 button.remove-group-button:hover {
     background-color: #840000;
-}
-
-button.open-group-button {
-    float: right;
 }
 
 div.clear-float {
@@ -73,6 +68,15 @@ select {
     margin-bottom: 10px;
 }
 
-select, option {
+input, option, select {
     color: #314166;
+}
+
+.float-right {
+    float: right;
+}
+
+.create-group-url-input {
+    width: 100%;
+    margin-bottom: 3px;
 }
