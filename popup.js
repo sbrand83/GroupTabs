@@ -4,6 +4,7 @@ var createGroupButton = document.getElementById("create-group-button");
 createGroupButton.addEventListener("click", createGroupClickHandler);
 
 var newGroupNameInput = document.getElementById("create-group-name-input");
+newGroupNameInput.addEventListener("input", checkValidName);
 
 var createGroupSelect = document.getElementById("create-group-method-select");
 createGroupSelect.addEventListener("change", switchCreateGroupMethod);
@@ -254,4 +255,43 @@ function resetCreateGroupManualForm() {
         groupUrls.removeChild(groupUrls.childNodes[0]);
     }
     addAnotherUrl();
+}
+
+function checkValidName() {
+    var errorInfo = document.getElementById("name-error-info");
+
+    var name = newGroupNameInput.value;
+
+    //check that name is not empty
+    if (name === "") {
+        errorInfo.textContent = "Enter a group name";
+        errorInfo.classList.remove("valid");
+        errorInfo.classList.add("error");
+        return false;
+    }
+
+    // check that the name is not too long (mostly to keep UI clean)
+    if (name.length >= 28) {
+        errorInfo.textContent = "The name is too long. Please choose a shorter name.";
+        errorInfo.classList.remove("valid");
+        errorInfo.classList.add("error");
+        return false;
+    }
+
+    // check that the name is unique
+    var groupNames = [];
+    for (var i = 0; i < local_groups.length; i++) {
+        if (local_groups[i].name === name) {
+            errorInfo.textContent = "You already have a group named '" + name + "'. Please choose another name.";
+            errorInfo.classList.remove("valid");
+            errorInfo.classList.add("error");
+            return false;
+        }
+    }
+
+    // name is valid
+    errorInfo.textContent = "Valid name";
+    errorInfo.classList.remove("error");
+    errorInfo.classList.add("valid");
+    return true;
 }

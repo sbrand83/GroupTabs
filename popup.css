@@ -80,3 +80,16 @@ input, option, select {
     width: 90%;
     margin-bottom: 3px;
 }
+
+#name-error-info {
+    margin: 0px;
+    font-size: smaller;
+}
+
+.error {
+    color: #9C0000;
+}
+
+.valid {
+    color: #0D4C4C;
+}
