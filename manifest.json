@@ -15,7 +15,7 @@
     "default_title": "GroupTabs"
   },
   "permissions": [
-    "tabs",
-    "storage"
+    "storage",
+    "tabs"
   ]
 }

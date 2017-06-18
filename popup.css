@@ -54,3 +54,25 @@ button.open-group-button {
 div.clear-float {
     clear: both;
 }
+
+#create-group-info {
+    font-size: smaller;
+}
+
+#create-group-section {
+    padding: 5px;
+    border: solid #314166 2px;
+}
+
+#create-group-section h2 {
+    margin-top: 0px;
+}
+
+select {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+select, option {
+    color: #314166;
+}
