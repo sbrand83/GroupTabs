@@ -15,6 +15,7 @@
     "default_title": "GroupTabs"
   },
   "permissions": [
+    "tabs",
     "activeTab",
     "https://ajax.googleapis.com/"
   ]
