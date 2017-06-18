@@ -1,3 +1,7 @@
 body {
     width: 400px;
 }
+
+#groups-list button {
+    display: block;
+}

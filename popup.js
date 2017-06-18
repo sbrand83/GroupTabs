@@ -37,9 +37,35 @@ function addGroupToList(group) {
     var group_button = document.createElement("button");
     var button_text = document.createTextNode(group.getName());
     group_button.appendChild(button_text);
-    // need to make the button actually do something
+    
+    group_button.addEventListener("click", openGroup);
 
 
     groups_list.appendChild(group_button);
     console.log("creating new group");
+}
+
+function openGroup(event) {
+    console.log("opening group");
+    var groupName = event.srcElement.textContent;
+    var selectedGroup;
+
+    for (var i = 0; i < groups.length; i++) {
+        if (groups[i].getName() === groupName) {
+            selectedGroup = groups[i];
+            break;
+        }
+    }
+
+    if (!selectedGroup) {
+        return;
+    }
+
+    var urls = [];
+    var tabs = selectedGroup.getTabs();
+    for (i = 0; i < tabs.length; i++) {
+        urls.push(tabs[i].url);
+    }
+
+    chrome.windows.create({url: urls});
 }
