@@ -31,9 +31,9 @@ function createGroupClickHandler() {
                 // make it look like a tab object
                 tabUrls.push({url: groupUrls.childNodes[i].childNodes[0].value});
             }
+            resetCreateGroupManualForm();
             createGroup(tabUrls);
     }
-    
 }
 
 function createGroup(tabs) {
@@ -245,4 +245,13 @@ function removeUrlInput(event) {
         groupUrls.childNodes[i].childNodes[0].name = i;
         groupUrls.childNodes[i].childNodes[1].name = i;
     }
+}
+
+function resetCreateGroupManualForm() {
+    var groupUrls = document.getElementById("create-group-urls");
+    var urlsToRemove = groupUrls.childNodes.length - 1;
+    for (var i = 0; i < urlsToRemove; i++) {
+        groupUrls.removeChild(groupUrls.childNodes[0]);
+    }
+    addAnotherUrl();
 }
