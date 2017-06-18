@@ -37,12 +37,12 @@ button:hover {
     background-color: #0D4C4C;
 }
 
-button.remove-group-button {
+button.remove-button {
     background-color: #9C0000;
     margin-right: 0px;
 }
 
-button.remove-group-button:hover {
+button.remove-button:hover {
     background-color: #840000;
 }
 
@@ -77,6 +77,6 @@ input, option, select {
 }
 
 .create-group-url-input {
-    width: 100%;
+    width: 90%;
     margin-bottom: 3px;
 }

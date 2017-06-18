@@ -101,7 +101,7 @@ function addGroupToList(group) {
     var removeGroupButtonText = document.createTextNode("Remove");
     removeGroupButton.appendChild(removeGroupButtonText);
     removeGroupButton.value = group.getName();
-    removeGroupButton.classList += "remove-group-button float-right";
+    removeGroupButton.classList += "remove-button float-right";
     removeGroupButton.addEventListener("click", removeGroup);
 
     var clearFloat = document.createElement("div");
@@ -171,7 +171,7 @@ function switchCreateGroupMethod(event) {
             createGroupInfo.textContent = "Group will be made up of all active tabs in the current window.";
             break;
         case 'manual':
-            var urlInput = createUrlInput();
+            var urlInputDiv = createUrlInput(0);
 
             var anotherURLButton = document.createElement("button");
             var buttonText = document.createTextNode("Add another URL");
@@ -179,7 +179,7 @@ function switchCreateGroupMethod(event) {
             anotherURLButton.classList += "float-right";
             anotherURLButton.addEventListener("click", addAnotherUrl);
 
-            groupUrls.appendChild(urlInput);
+            groupUrls.appendChild(urlInputDiv);
             groupUrls.appendChild(anotherURLButton);
 
             createGroupInfo.textContent = "Group will be made up of all URLs entered below.";
@@ -188,18 +188,48 @@ function switchCreateGroupMethod(event) {
     }
 }
 
-function createUrlInput() {
+function createUrlInput(index) {
+    var urlInputDiv = document.createElement("div");
+    urlInputDiv.classList += "url-input-row";
+
     var urlInput = document.createElement("input");
     urlInput.type = "url";
     urlInput.placeholder = "https://www.google.com";
     urlInput.classList += "create-group-url-input";
-    return urlInput;
+    urlInput.name = index;
+
+    urlInputDiv.appendChild(urlInput);
+
+    // don't want to be able to remove first url
+    if (index !== 0) {
+        var removeUrlButton = document.createElement("button");
+        removeUrlButton.textContent = "X";
+        removeUrlButton.classList += "remove-button float-right";
+        removeUrlButton.name = index;
+        removeUrlButton.addEventListener("click", removeUrlInput);
+        urlInputDiv.appendChild(removeUrlButton);
+    }
+    
+    return urlInputDiv;
 }
 
 function addAnotherUrl() {
     var groupUrls = document.getElementById("create-group-urls");
     var indexOfAddAnotherUrlButton = groupUrls.children.length - 1;
-    var urlInput = createUrlInput();
+    var urlInputDiv = createUrlInput(indexOfAddAnotherUrlButton);
 
-    groupUrls.insertBefore(urlInput, groupUrls.children[indexOfAddAnotherUrlButton]);
+    groupUrls.insertBefore(urlInputDiv, groupUrls.children[indexOfAddAnotherUrlButton]);
+}
+
+function removeUrlInput(event) {
+    var index = parseInt(event.srcElement.name);
+    var groupUrls = document.getElementById("create-group-urls");
+
+    groupUrls.removeChild(groupUrls.childNodes[index]);
+
+    // update indexes of elements after the one that was removed
+    for (var i = index; i < groupUrls.childNodes.length - 1; i++) {
+        groupUrls.childNodes[i].childNodes[0].name = i;
+        groupUrls.childNodes[i].childNodes[1].name = i;
+    }
 }
