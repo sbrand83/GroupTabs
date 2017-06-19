@@ -23,7 +23,7 @@ function createGroupClickHandler() {
     var createMethod = createGroupSelect.selectedOptions[0].value;
     switch (createMethod) {
         case 'current-window':
-            chrome.tabs.query({}, createGroup);
+            chrome.tabs.query({lastFocusedWindow: true}, createGroup);
             break;
         case 'manual':
             var tabUrls = [];
@@ -32,14 +32,22 @@ function createGroupClickHandler() {
                 // make it look like a tab object
                 tabUrls.push({url: groupUrls.childNodes[i].childNodes[0].value});
             }
-            resetCreateGroupManualForm();
-            createGroup(tabUrls);
+            var createdGroup = createGroup(tabUrls);
+            if (createdGroup) {
+                resetCreateGroupManualForm();
+            }
     }
 }
 
 function createGroup(tabs) {
+    // form validation
+    if (!checkValidForm()) {
+        return false;
+    }
     var name = newGroupNameInput.value;
     newGroupNameInput.value = "";
+    // resets the name validation message
+    checkValidName();
 
     var tab_urls = [];
     for (var i = 0; i < tabs.length; i++) {
@@ -67,6 +75,7 @@ function createGroup(tabs) {
         deserializeGroups(serialized_groups);
         updateGroupsList();
     });
+    return true;
 }
 
 function deserializeGroups(serializedGroups) {
@@ -211,6 +220,9 @@ function createUrlInput(index) {
     urlInput.placeholder = "https://www.google.com";
     urlInput.classList += "create-group-url-input";
     urlInput.name = index;
+    urlInput.addEventListener("input", function(event) {
+        checkValidUrl(urlInputDiv); 
+    });
 
     urlInputDiv.appendChild(urlInput);
 
@@ -223,6 +235,12 @@ function createUrlInput(index) {
         removeUrlButton.addEventListener("click", removeUrlInput);
         urlInputDiv.appendChild(removeUrlButton);
     }
+
+    var errorInfo = document.createElement("p");
+    errorInfo.textContent = "Enter a URL";
+    errorInfo.classList.add("error");
+
+    urlInputDiv.appendChild(errorInfo);
     
     return urlInputDiv;
 }
@@ -257,9 +275,26 @@ function resetCreateGroupManualForm() {
     addAnotherUrl();
 }
 
+function checkValidForm() {
+    var createMethod = createGroupSelect.selectedOptions[0].value;
+    switch (createMethod) {
+        case 'current-window':
+            return checkValidName();
+        case 'manual':
+            var groupUrls = document.getElementById("create-group-urls");
+            var urlsValid = true;
+            for (var i = 0; i < groupUrls.childNodes.length - 1; i++) {
+                urlsValid = urlsValid && checkValidUrl(groupUrls.childNodes[i]);
+                if (!urlsValid) {
+                    return false;
+                }
+            }
+            return checkValidName() && urlsValid;
+    }
+}
+
 function checkValidName() {
     var errorInfo = document.getElementById("name-error-info");
-
     var name = newGroupNameInput.value;
 
     //check that name is not empty
@@ -279,7 +314,6 @@ function checkValidName() {
     }
 
     // check that the name is unique
-    var groupNames = [];
     for (var i = 0; i < local_groups.length; i++) {
         if (local_groups[i].name === name) {
             errorInfo.textContent = "You already have a group named '" + name + "'. Please choose another name.";
@@ -293,5 +327,21 @@ function checkValidName() {
     errorInfo.textContent = "Valid name";
     errorInfo.classList.remove("error");
     errorInfo.classList.add("valid");
+    return true;
+}
+
+function checkValidUrl(urlInputDiv) {
+    // lastChild because there may or may not be a remove button in there
+    var errorInfo = urlInputDiv.lastChild;
+    var urlInput = urlInputDiv.firstChild;
+
+    if (urlInput.value === "") {
+        errorInfo.textContent = "Enter a URL";
+        errorInfo.classList.remove("valid");
+        errorInfo.classList.add("error");
+        return false;
+    }
+
+    errorInfo.textContent = "";
     return true;
 }

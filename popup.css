@@ -93,3 +93,8 @@ input, option, select {
 .valid {
     color: #0D4C4C;
 }
+
+#create-group-urls p {
+    margin: 0px;
+    font-size: smaller;
+}
