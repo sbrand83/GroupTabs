@@ -185,13 +185,10 @@ function editGroup(event) {
 
     // editButton in groupHeader which is in groupContainer (probably a better way to do this)
     var groupContainer = editButton.parentElement.parentElement;
-    // need to change buttons on groupHeader
     var groupHeader = editButton.parentElement;
     changeGroupHeaderForEdit(groupHeader, groupName);
     
     var editGroupUrlsContainer = document.createElement("div");
-
-    // I may not need this here
     editGroupUrlsContainer.id = "edit-group-url-list";
 
     var tabUrls = selectedGroup.getTabUrls();
@@ -232,10 +229,20 @@ function changeGroupHeaderForEdit(groupHeader, groupName) {
         updateGroup(groupName);
     });
 
+    var cancelButton = document.createElement("button");
+    var cancelButtonText = document.createTextNode("Cancel");
+    cancelButton.appendChild(cancelButtonText);
+    cancelButton.value = groupName;
+    cancelButton.classList += "save-group-button float-right";
+    cancelButton.addEventListener("click", function() {
+        cancelEdit();
+    });
+
     var clearFloat = document.createElement("div");
     clearFloat.classList += "clear-float";
 
     groupHeader.appendChild(saveButton);
+    groupHeader.appendChild(cancelButton);
     groupHeader.appendChild(clearFloat);
 }
 
@@ -290,6 +297,10 @@ function updateGroup(groupName) {
         tabUrls.push(groupUrls.childNodes[i].childNodes[0].value);
     }
     createGroup(groupName, tabUrls);
+}
+
+function cancelEdit() {
+    updateGroupsList();
 }
 
 function switchCreateGroupMethod(event) {
