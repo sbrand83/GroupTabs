@@ -175,6 +175,17 @@ function openGroup(event) {
 }
 
 function editGroup(event) {
+    // hide the create group and disable the other buttons
+    var createGroupSection = document.getElementById('create-group-section');
+    createGroupSection.classList.add("hidden");
+
+    var groupsList = document.getElementById("groups-list");
+    var buttons = groupsList.getElementsByTagName("button");
+    for (var i = 0; i < buttons.length; i++) {
+        buttons[i].disabled = true;
+    }
+
+
     var editButton = event.srcElement;
     var groupName = editButton.value;
     selectedGroup = getGroup(groupName);
@@ -227,6 +238,8 @@ function changeGroupHeaderForEdit(groupHeader, groupName) {
     saveButton.classList += "save-group-button float-right";
     saveButton.addEventListener("click", function() {
         updateGroup(groupName);
+        var createGroupSection = document.getElementById('create-group-section');
+        createGroupSection.classList.remove("hidden");
     });
 
     var cancelButton = document.createElement("button");
@@ -236,6 +249,8 @@ function changeGroupHeaderForEdit(groupHeader, groupName) {
     cancelButton.classList += "save-group-button float-right";
     cancelButton.addEventListener("click", function() {
         cancelEdit();
+        var createGroupSection = document.getElementById('create-group-section');
+        createGroupSection.classList.remove("hidden");
     });
 
     var clearFloat = document.createElement("div");

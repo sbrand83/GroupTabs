@@ -15,16 +15,14 @@ body {
 
 .group-container {
     background-color: #F0F0F0;
-}
-
-.group-header {
-    border-bottom: solid #162955 1px;
-}
-
-.group-container, .group-header {
     padding: 5px;
     margin-bottom: 2px;
 }
+
+.group-header {
+
+}
+
 
 h1, h2 {
     color: #162955;
@@ -107,5 +105,19 @@ input, option, select {
 }
 
 #edit-group-url-list {
+    border-top: solid #162955 1px;
     padding-top: 5px;
+    margin-top: 5px;
+}
+
+.hidden {
+    display: none;
+}
+
+button:disabled {
+    background-color: grey;
+}
+
+button:disabled:hover {
+    background-color: grey;
 }
