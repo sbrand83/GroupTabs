@@ -21,47 +21,54 @@ function initializeGroupsList() {
 
 function createGroupClickHandler() {
     var createMethod = createGroupSelect.selectedOptions[0].value;
+    var groupName = newGroupNameInput.value;
+
     switch (createMethod) {
         case 'current-window':
-            chrome.tabs.query({lastFocusedWindow: true}, createGroup);
+            chrome.tabs.query({lastFocusedWindow: true}, function(tabs) {
+                var tabUrls = [];
+                for (var i = 0; i < tabs.length; i++) {
+                    tabUrls.push(tabs[i].url);
+                }
+                createGroup(groupName, tabUrls);
+                newGroupNameInput.value = '';
+            });
             break;
         case 'manual':
+            // form validation
+            if (!checkValidForm()) {
+                return false;
+            }
+            checkValidName();
+
             var tabUrls = [];
             var groupUrls = document.getElementById("create-group-urls");
             for (var i = 0; i < groupUrls.childNodes.length - 1; i++) {
-                // make it look like a tab object
-                tabUrls.push({url: groupUrls.childNodes[i].childNodes[0].value});
+                tabUrls.push(groupUrls.childNodes[i].childNodes[0].value);
             }
-            var createdGroup = createGroup(tabUrls);
+
+            var createdGroup = createGroup(groupName, tabUrls);
             if (createdGroup) {
                 resetCreateGroupManualForm();
             }
     }
 }
 
-function createGroup(tabs) {
-    // form validation
-    if (!checkValidForm()) {
-        return false;
-    }
-    var name = newGroupNameInput.value;
-    newGroupNameInput.value = "";
-    // resets the name validation message
-    checkValidName();
-
-    var tab_urls = [];
-    for (var i = 0; i < tabs.length; i++) {
-        tab_urls.push(tabs[i].url);
-    }
-    var newGroup = new Group(name, tab_urls);
+function createGroup(name, tabUrls) {
+    var newGroup = new Group(name, tabUrls);
     local_groups.push(newGroup);
+    saveGroup(newGroup);
+    return newGroup;
+}
 
+function saveGroup(group) {
     chrome.storage.sync.get('groups', function(items) {
         var serialized_groups = items.groups;
         if (serialized_groups) {
             for (var i = 0; i < serialized_groups.length; i++) {
-                if (serialized_groups[i].name === newGroup.getName()) {
-                    serialized_groups[i] = newGroup.serialize();
+                // if group already exists, replace it with new group
+                if (serialized_groups[i].name === group.getName()) {
+                    serialized_groups[i] = group.serialize();
                     chrome.storage.sync.set({"groups": serialized_groups});
                     return;
                 }
@@ -70,7 +77,7 @@ function createGroup(tabs) {
             serialized_groups = [];
         }
         
-        serialized_groups.push(newGroup.serialize());
+        serialized_groups.push(group.serialize());
         chrome.storage.sync.set({"groups": serialized_groups});
         deserializeGroups(serialized_groups);
         updateGroupsList();
@@ -348,6 +355,7 @@ function resetCreateGroupManualForm() {
         createGroupUrlsContainer.removeChild(createGroupUrlsContainer.childNodes[0]);
     }
     addAnotherUrl(createGroupUrlsContainer, undefined);
+    newGroupNameInput.value = '';
 }
 
 function checkValidForm() {
