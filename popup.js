@@ -105,6 +105,9 @@ function updateGroupsList() {
 }
 
 function addGroupToList(group) {
+    var groupContainer = document.createElement("div");
+    groupContainer.classList.add("group-container");
+
     var groupRow = document.createElement("div");
     groupRow.classList.add("group-row");
 
@@ -144,24 +147,61 @@ function addGroupToList(group) {
     groupRow.appendChild(openGroupButton);
     groupRow.appendChild(clearFloat);
 
-    groupsList.appendChild(groupRow);
+    groupContainer.appendChild(groupRow);
+
+    groupsList.appendChild(groupContainer);
 }
 
 function openGroup(event) {
     var groupName = event.srcElement.value;
     selectedGroup = getGroup(groupName);
 
+    if (!selectedGroup) {
+        return;
+    }
+
     var tab_urls = selectedGroup.getTabUrls();
     chrome.windows.create({url: tab_urls});
 }
 
 function editGroup(event) {
-    var groupName = event.srcElement.value;
+    var editButton = event.srcElement;
+    var groupName = editButton.value;
     selectedGroup = getGroup(groupName);
+
+    if (!selectedGroup) {
+        return;
+    }
     
-    var tab_urls = selectedGroup.getTabUrls();
+    var editGroupUrlsContainer = document.createElement("div");
+    editGroupUrlsContainer.id = "edit-group-url-list";
+
+    var tabUrls = selectedGroup.getTabUrls();
+
+    var urlInputDiv = createUrlInput(0, tabUrls[0]);
+
+    var anotherUrlButton = addAnotherURLButton = createAddAnotherUrlButton(function() {
+        addAnotherUrl(editGroupUrlsContainer, undefined);
+    });
+
+    editGroupUrlsContainer.appendChild(urlInputDiv);
+    editGroupUrlsContainer.appendChild(anotherUrlButton);
 
     // want to show all the urls, can use the same thing from when manually ccreating a group
+    for (var i = 1; i < tabUrls.length; i++) {
+        addAnotherUrl(editGroupUrlsContainer, tabUrls[i]);
+    }
+
+
+
+    // editButton in group-row which is in group-container (probably a better way to do this)
+    var groupContainer = editButton.parentElement.parentElement;
+    groupContainer.appendChild(editGroupUrlsContainer);
+
+    var clearFloat = document.createElement("div");
+    clearFloat.classList += "clear-float";
+
+    groupContainer.appendChild(clearFloat);
 }
 
 function removeGroup(event) {
@@ -218,13 +258,9 @@ function switchCreateGroupMethod(event) {
         case 'manual':
             var urlInputDiv = createUrlInput(0);
 
-            var anotherURLButton = document.createElement("button");
-            var buttonText = document.createTextNode("Add another URL");
-            anotherURLButton.appendChild(buttonText);
-            anotherURLButton.classList += "float-right";
-            anotherURLButton.addEventListener("click", function() {
+            anotherURLButton = createAddAnotherUrlButton(function() {
                 var createGroupUrlsContainer = document.getElementById("create-group-urls");
-                addAnotherUrl(createGroupUrlsContainer);
+                addAnotherUrl(createGroupUrlsContainer, undefined);
             });
 
             groupUrls.appendChild(urlInputDiv);
@@ -236,13 +272,27 @@ function switchCreateGroupMethod(event) {
     }
 }
 
-function createUrlInput(index) {
+function createAddAnotherUrlButton(clickCallback) {
+    var anotherURLButton = document.createElement("button");
+    var buttonText = document.createTextNode("Add another URL");
+    anotherURLButton.appendChild(buttonText);
+    anotherURLButton.classList += "float-right";
+    anotherURLButton.addEventListener("click", function() {
+        clickCallback();
+    });
+    return anotherURLButton;
+}
+
+function createUrlInput(index, urlValue) {
     var urlInputDiv = document.createElement("div");
     urlInputDiv.classList += "url-input-row";
 
     var urlInput = document.createElement("input");
     urlInput.type = "url";
     urlInput.placeholder = "https://www.google.com";
+    if (urlValue) {
+        urlInput.value = urlValue;
+    }
     urlInput.classList += "create-group-url-input";
     urlInput.name = index;
     urlInput.addEventListener("input", function(event) {
@@ -257,7 +307,11 @@ function createUrlInput(index) {
         removeUrlButton.textContent = "X";
         removeUrlButton.classList += "remove-button float-right";
         removeUrlButton.name = index;
-        removeUrlButton.addEventListener("click", removeUrlInput);
+        removeUrlButton.addEventListener("click", function(event) {
+            var urlContainer = event.srcElement.parentElement.parentElement;
+            var index = parseInt(event.srcElement.name);
+            removeUrlInput(urlContainer, index);
+        });
         urlInputDiv.appendChild(removeUrlButton);
     }
 
@@ -270,23 +324,20 @@ function createUrlInput(index) {
     return urlInputDiv;
 }
 
-function addAnotherUrl(groupUrlListContainer) {
+function addAnotherUrl(groupUrlListContainer, urlValue) {
     var indexOfAddAnotherUrlButton = groupUrlListContainer.children.length - 1;
-    var urlInputDiv = createUrlInput(indexOfAddAnotherUrlButton);
+    var urlInputDiv = createUrlInput(indexOfAddAnotherUrlButton, urlValue);
 
     groupUrlListContainer.insertBefore(urlInputDiv, groupUrlListContainer.children[indexOfAddAnotherUrlButton]);
 }
 
-function removeUrlInput(event) {
-    var index = parseInt(event.srcElement.name);
-    var groupUrls = document.getElementById("create-group-urls");
-
-    groupUrls.removeChild(groupUrls.childNodes[index]);
+function removeUrlInput(groupUrlListContainer, index) {
+    groupUrlListContainer.removeChild(groupUrlListContainer.childNodes[index]);
 
     // update indexes of elements after the one that was removed
-    for (var i = index; i < groupUrls.childNodes.length - 1; i++) {
-        groupUrls.childNodes[i].childNodes[0].name = i;
-        groupUrls.childNodes[i].childNodes[1].name = i;
+    for (var i = index; i < groupUrlListContainer.childNodes.length - 1; i++) {
+        groupUrlListContainer.childNodes[i].childNodes[0].name = i;
+        groupUrlListContainer.childNodes[i].childNodes[1].name = i;
     }
 }
 
@@ -296,7 +347,7 @@ function resetCreateGroupManualForm() {
     for (var i = 0; i < urlsToRemove; i++) {
         createGroupUrlsContainer.removeChild(createGroupUrlsContainer.childNodes[0]);
     }
-    addAnotherUrl(createGroupUrlsContainer);
+    addAnotherUrl(createGroupUrlsContainer, undefined);
 }
 
 function checkValidForm() {
