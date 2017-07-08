@@ -3,17 +3,17 @@ body {
     color: #314166;
 }
 
-.group-row button {
+.group-header button {
     display: inline-block;
     margin-right: 5px;
 }
 
-.group-row .group-name {
+.group-header .group-name {
     display: inline-block;
     margin: 0px;
 }
 
-.group-row {
+.group-header {
     background-color: #F0F0F0;
     padding: 5px;
     margin-bottom: 2px;
@@ -76,7 +76,7 @@ input, option, select {
     float: right;
 }
 
-.create-group-url-input {
+.group-url-input {
     width: 90%;
     margin-bottom: 3px;
 }
@@ -94,7 +94,7 @@ input, option, select {
     color: #0D4C4C;
 }
 
-#create-group-urls p {
+#create-group-urls p, #edit-group-url-list p {
     margin: 0px;
     font-size: smaller;
 }

@@ -115,8 +115,8 @@ function addGroupToList(group) {
     var groupContainer = document.createElement("div");
     groupContainer.classList.add("group-container");
 
-    var groupRow = document.createElement("div");
-    groupRow.classList.add("group-row");
+    var groupHeader = document.createElement("div");
+    groupHeader.classList.add("group-header");
 
     var groupsList = document.getElementById("groups-list");
     var groupName = document.createElement("h3");
@@ -148,13 +148,13 @@ function addGroupToList(group) {
     var clearFloat = document.createElement("div");
     clearFloat.classList += "clear-float";
 
-    groupRow.appendChild(groupName);
-    groupRow.appendChild(removeGroupButton);
-    groupRow.appendChild(editGroupButton);
-    groupRow.appendChild(openGroupButton);
-    groupRow.appendChild(clearFloat);
+    groupHeader.appendChild(groupName);
+    groupHeader.appendChild(removeGroupButton);
+    groupHeader.appendChild(editGroupButton);
+    groupHeader.appendChild(openGroupButton);
+    groupHeader.appendChild(clearFloat);
 
-    groupContainer.appendChild(groupRow);
+    groupContainer.appendChild(groupHeader);
 
     groupsList.appendChild(groupContainer);
 }
@@ -300,7 +300,7 @@ function createUrlInput(index, urlValue) {
     if (urlValue) {
         urlInput.value = urlValue;
     }
-    urlInput.classList += "create-group-url-input";
+    urlInput.classList += "group-url-input";
     urlInput.name = index;
     urlInput.addEventListener("input", function(event) {
         checkValidUrl(urlInputDiv); 
