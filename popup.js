@@ -56,7 +56,6 @@ function createGroupClickHandler() {
 
 function createGroup(name, tabUrls) {
     var newGroup = new Group(name, tabUrls);
-    local_groups.push(newGroup);
     saveGroup(newGroup);
     return newGroup;
 }
@@ -66,10 +65,12 @@ function saveGroup(group) {
         var serialized_groups = items.groups;
         if (serialized_groups) {
             for (var i = 0; i < serialized_groups.length; i++) {
-                // if group already exists, replace it with new group
+                // if group already exists, replace it with the new group
                 if (serialized_groups[i].name === group.getName()) {
                     serialized_groups[i] = group.serialize();
                     chrome.storage.sync.set({"groups": serialized_groups});
+                    deserializeGroups(serialized_groups);
+                    updateGroupsList();
                     return;
                 }
             }
@@ -88,7 +89,9 @@ function saveGroup(group) {
 function deserializeGroups(serializedGroups) {
     local_groups = [];
     for (var i = 0; i < serializedGroups.length; i++) {
-        local_groups.push(new Group(serializedGroups[i].name, serializedGroups[i].tab_urls));
+        if (serializedGroups[i].name) {
+            local_groups.push(new Group(serializedGroups[i].name, serializedGroups[i].tab_urls));
+        }
     }
 }
 
@@ -179,15 +182,22 @@ function editGroup(event) {
     if (!selectedGroup) {
         return;
     }
+
+    // editButton in groupHeader which is in groupContainer (probably a better way to do this)
+    var groupContainer = editButton.parentElement.parentElement;
+    // need to change buttons on groupHeader
+    var groupHeader = editButton.parentElement;
+    changeGroupHeaderForEdit(groupHeader, groupName);
     
     var editGroupUrlsContainer = document.createElement("div");
+
+    // I may not need this here
     editGroupUrlsContainer.id = "edit-group-url-list";
 
     var tabUrls = selectedGroup.getTabUrls();
 
     var urlInputDiv = createUrlInput(0, tabUrls[0]);
-
-    var anotherUrlButton = addAnotherURLButton = createAddAnotherUrlButton(function() {
+    var anotherUrlButton = createAddAnotherUrlButton(function() {
         addAnotherUrl(editGroupUrlsContainer, undefined);
     });
 
@@ -198,17 +208,35 @@ function editGroup(event) {
     for (var i = 1; i < tabUrls.length; i++) {
         addAnotherUrl(editGroupUrlsContainer, tabUrls[i]);
     }
-
-
-
-    // editButton in group-row which is in group-container (probably a better way to do this)
-    var groupContainer = editButton.parentElement.parentElement;
+    
     groupContainer.appendChild(editGroupUrlsContainer);
 
     var clearFloat = document.createElement("div");
     clearFloat.classList += "clear-float";
 
     groupContainer.appendChild(clearFloat);
+}
+
+function changeGroupHeaderForEdit(groupHeader, groupName) {
+    // remove open, edit, remove buttons
+    while (groupHeader.childNodes.length > 1) {
+        groupHeader.removeChild(groupHeader.lastChild);
+    }
+
+    var saveButton = document.createElement("button");
+    var saveButtonText = document.createTextNode("Save");
+    saveButton.appendChild(saveButtonText);
+    saveButton.value = groupName;
+    saveButton.classList += "save-group-button float-right";
+    saveButton.addEventListener("click", function() {
+        updateGroup(groupName);
+    });
+
+    var clearFloat = document.createElement("div");
+    clearFloat.classList += "clear-float";
+
+    groupHeader.appendChild(saveButton);
+    groupHeader.appendChild(clearFloat);
 }
 
 function removeGroup(event) {
@@ -247,6 +275,21 @@ function getGroup(groupName) {
         return;
     }
     return selectedGroup;
+}
+
+function updateGroup(groupName) {
+    // form validation
+    var groupUrls = document.getElementById("edit-group-url-list");
+    var urlsValid = true;
+    var tabUrls = [];
+    for (var i = 0; i < groupUrls.childNodes.length - 1; i++) {
+        urlsValid = urlsValid && checkValidUrl(groupUrls.childNodes[i]);
+        if (!urlsValid) {
+            return false;
+        }
+        tabUrls.push(groupUrls.childNodes[i].childNodes[0].value);
+    }
+    createGroup(groupName, tabUrls);
 }
 
 function switchCreateGroupMethod(event) {
@@ -327,7 +370,8 @@ function createUrlInput(index, urlValue) {
     errorInfo.classList.add("error");
 
     urlInputDiv.appendChild(errorInfo);
-    
+    checkValidUrl(urlInputDiv);
+
     return urlInputDiv;
 }
 

@@ -13,8 +13,15 @@ body {
     margin: 0px;
 }
 
-.group-header {
+.group-container {
     background-color: #F0F0F0;
+}
+
+.group-header {
+    border-bottom: solid #162955 1px;
+}
+
+.group-container, .group-header {
     padding: 5px;
     margin-bottom: 2px;
 }
@@ -97,4 +104,8 @@ input, option, select {
 #create-group-urls p, #edit-group-url-list p {
     margin: 0px;
     font-size: smaller;
+}
+
+#edit-group-url-list {
+    padding-top: 5px;
 }
