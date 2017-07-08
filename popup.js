@@ -121,6 +121,13 @@ function addGroupToList(group) {
     openGroupButton.classList += "open-group-button float-right";
     openGroupButton.addEventListener("click", openGroup);
 
+    var editGroupButton = document.createElement("button");
+    var editGroupButtonText = document.createTextNode("Edit");
+    editGroupButton.appendChild(editGroupButtonText);
+    editGroupButton.value = group.getName();
+    editGroupButton.classList += "edit-group-button float-right";
+    editGroupButton.addEventListener("click", editGroup);
+
     var removeGroupButton = document.createElement("button");
     var removeGroupButtonText = document.createTextNode("Remove");
     removeGroupButton.appendChild(removeGroupButtonText);
@@ -133,6 +140,7 @@ function addGroupToList(group) {
 
     groupRow.appendChild(groupName);
     groupRow.appendChild(removeGroupButton);
+    groupRow.appendChild(editGroupButton);
     groupRow.appendChild(openGroupButton);
     groupRow.appendChild(clearFloat);
 
@@ -141,21 +149,19 @@ function addGroupToList(group) {
 
 function openGroup(event) {
     var groupName = event.srcElement.value;
-    var selectedGroup;
-
-    for (var i = 0; i < local_groups.length; i++) {
-        if (local_groups[i].getName() === groupName) {
-            selectedGroup = local_groups[i];
-            break;
-        }
-    }
-
-    if (!selectedGroup) {
-        return;
-    }
+    selectedGroup = getGroup(groupName);
 
     var tab_urls = selectedGroup.getTabUrls();
     chrome.windows.create({url: tab_urls});
+}
+
+function editGroup(event) {
+    var groupName = event.srcElement.value;
+    selectedGroup = getGroup(groupName);
+    
+    var tab_urls = selectedGroup.getTabUrls();
+
+    // want to show all the urls, can use the same thing from when manually ccreating a group
 }
 
 function removeGroup(event) {
@@ -178,6 +184,22 @@ function removeGroup(event) {
         deserializeGroups(serialized_groups);
         updateGroupsList();
     });
+}
+
+function getGroup(groupName) {
+    var selectedGroup;
+
+    for (var i = 0; i < local_groups.length; i++) {
+        if (local_groups[i].getName() === groupName) {
+            selectedGroup = local_groups[i];
+            break;
+        }
+    }
+
+    if (!selectedGroup) {
+        return;
+    }
+    return selectedGroup;
 }
 
 function switchCreateGroupMethod(event) {
