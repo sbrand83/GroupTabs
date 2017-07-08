@@ -200,7 +200,10 @@ function switchCreateGroupMethod(event) {
             var buttonText = document.createTextNode("Add another URL");
             anotherURLButton.appendChild(buttonText);
             anotherURLButton.classList += "float-right";
-            anotherURLButton.addEventListener("click", addAnotherUrl);
+            anotherURLButton.addEventListener("click", function() {
+                var createGroupUrlsContainer = document.getElementById("create-group-urls");
+                addAnotherUrl(createGroupUrlsContainer);
+            });
 
             groupUrls.appendChild(urlInputDiv);
             groupUrls.appendChild(anotherURLButton);
@@ -245,12 +248,11 @@ function createUrlInput(index) {
     return urlInputDiv;
 }
 
-function addAnotherUrl() {
-    var groupUrls = document.getElementById("create-group-urls");
-    var indexOfAddAnotherUrlButton = groupUrls.children.length - 1;
+function addAnotherUrl(groupUrlListContainer) {
+    var indexOfAddAnotherUrlButton = groupUrlListContainer.children.length - 1;
     var urlInputDiv = createUrlInput(indexOfAddAnotherUrlButton);
 
-    groupUrls.insertBefore(urlInputDiv, groupUrls.children[indexOfAddAnotherUrlButton]);
+    groupUrlListContainer.insertBefore(urlInputDiv, groupUrlListContainer.children[indexOfAddAnotherUrlButton]);
 }
 
 function removeUrlInput(event) {
@@ -267,12 +269,12 @@ function removeUrlInput(event) {
 }
 
 function resetCreateGroupManualForm() {
-    var groupUrls = document.getElementById("create-group-urls");
-    var urlsToRemove = groupUrls.childNodes.length - 1;
+    var createGroupUrlsContainer = document.getElementById("create-group-urls");
+    var urlsToRemove = createGroupUrlsContainer.childNodes.length - 1;
     for (var i = 0; i < urlsToRemove; i++) {
-        groupUrls.removeChild(groupUrls.childNodes[0]);
+        createGroupUrlsContainer.removeChild(createGroupUrlsContainer.childNodes[0]);
     }
-    addAnotherUrl();
+    addAnotherUrl(createGroupUrlsContainer);
 }
 
 function checkValidForm() {
