@@ -204,7 +204,7 @@ function editGroup(event) {
 
     var tabUrls = selectedGroup.getTabUrls();
 
-    var urlInputDiv = createUrlInput(0, tabUrls[0]);
+    var urlInputDiv = createUrlInput(0, tabUrls[0], false);
     var anotherUrlButton = createAddAnotherUrlButton(function() {
         addAnotherUrl(editGroupUrlsContainer, undefined);
     });
@@ -212,7 +212,7 @@ function editGroup(event) {
     editGroupUrlsContainer.appendChild(urlInputDiv);
     editGroupUrlsContainer.appendChild(anotherUrlButton);
 
-    // want to show all the urls, can use the same thing from when manually ccreating a group
+    // want to show all the urls, can use the same thing from when manually creating a group
     for (var i = 1; i < tabUrls.length; i++) {
         addAnotherUrl(editGroupUrlsContainer, tabUrls[i]);
     }
@@ -332,7 +332,7 @@ function switchCreateGroupMethod(event) {
             createGroupInfo.textContent = "Group will be made up of all tabs in the current window.";
             break;
         case 'manual':
-            var urlInputDiv = createUrlInput(0);
+            var urlInputDiv = createUrlInput(0, undefined, false);
 
             anotherURLButton = createAddAnotherUrlButton(function() {
                 var createGroupUrlsContainer = document.getElementById("create-group-urls");
@@ -359,7 +359,7 @@ function createAddAnotherUrlButton(clickCallback) {
     return anotherURLButton;
 }
 
-function createUrlInput(index, urlValue) {
+function createUrlInput(index, urlValue, removable) {
     var urlInputDiv = document.createElement("div");
     urlInputDiv.classList += "url-input-row";
 
@@ -377,8 +377,7 @@ function createUrlInput(index, urlValue) {
 
     urlInputDiv.appendChild(urlInput);
 
-    // don't want to be able to remove first url
-    if (index !== 0) {
+    if (removable) {
         var removeUrlButton = document.createElement("button");
         removeUrlButton.textContent = "X";
         removeUrlButton.classList += "remove-button float-right";
@@ -403,13 +402,29 @@ function createUrlInput(index, urlValue) {
 
 function addAnotherUrl(groupUrlListContainer, urlValue) {
     var indexOfAddAnotherUrlButton = groupUrlListContainer.children.length - 1;
-    var urlInputDiv = createUrlInput(indexOfAddAnotherUrlButton, urlValue);
+
+    // if there is already 1 url (and add button), it is safe to be able to delete the first url
+    if (groupUrlListContainer.children.length === 2) {
+        var url = groupUrlListContainer.children[0].children[0].value;
+        var firstUrlWithButton = createUrlInput(0, url, true);
+        removeUrlInput(groupUrlListContainer, 0);
+        groupUrlListContainer.insertBefore(firstUrlWithButton, groupUrlListContainer.children[0]);
+    }
+    var urlInputDiv = createUrlInput(indexOfAddAnotherUrlButton, urlValue, true);
 
     groupUrlListContainer.insertBefore(urlInputDiv, groupUrlListContainer.children[indexOfAddAnotherUrlButton]);
 }
 
 function removeUrlInput(groupUrlListContainer, index) {
     groupUrlListContainer.removeChild(groupUrlListContainer.childNodes[index]);
+
+    // if there is only going to be one remaining url, get rid of the remove button (2 because of the add button)
+    if (groupUrlListContainer.children.length === 2) {        
+        var url = groupUrlListContainer.children[0].children[0].value;
+        var firstUrlNoButton = createUrlInput(0, url, false);
+        removeUrlInput(groupUrlListContainer, 0);
+        groupUrlListContainer.insertBefore(firstUrlNoButton, groupUrlListContainer.children[0]);
+    }
 
     // update indexes of elements after the one that was removed
     for (var i = index; i < groupUrlListContainer.childNodes.length - 1; i++) {
