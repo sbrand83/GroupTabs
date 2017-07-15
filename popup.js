@@ -25,6 +25,9 @@ function createGroupClickHandler() {
 
     switch (createMethod) {
         case 'current-window':
+            if (!checkValidName()) {
+                return false;
+            }
             chrome.tabs.query({lastFocusedWindow: true}, function(tabs) {
                 var tabUrls = [];
                 for (var i = 0; i < tabs.length; i++) {
@@ -213,7 +216,7 @@ function editGroup(event) {
     editGroupUrlsContainer.appendChild(anotherUrlButton);
 
     // want to show all the urls, can use the same thing from when manually creating a group
-    for (var i = 1; i < tabUrls.length; i++) {
+    for (i = 1; i < tabUrls.length; i++) {
         addAnotherUrl(editGroupUrlsContainer, tabUrls[i]);
     }
     
@@ -237,9 +240,11 @@ function changeGroupHeaderForEdit(groupHeader, groupName) {
     saveButton.value = groupName;
     saveButton.classList += "save-group-button float-right";
     saveButton.addEventListener("click", function() {
-        updateGroup(groupName);
-        var createGroupSection = document.getElementById('create-group-section');
-        createGroupSection.classList.remove("hidden");
+        var successful = updateGroup(groupName);
+        if (successful) {
+            var createGroupSection = document.getElementById('create-group-section');
+            createGroupSection.classList.remove("hidden");
+        }
     });
 
     var cancelButton = document.createElement("button");
