@@ -253,7 +253,7 @@ function changeGroupHeaderForEdit(groupHeader, groupName) {
     cancelButton.value = groupName;
     cancelButton.classList += "save-group-button float-right";
     cancelButton.addEventListener("click", function() {
-        cancelEdit();
+        cancelGroupChange();
         var createGroupSection = document.getElementById('create-group-section');
         createGroupSection.classList.remove("hidden");
     });
@@ -266,7 +266,7 @@ function changeGroupHeaderForEdit(groupHeader, groupName) {
     groupHeader.appendChild(clearFloat);
 }
 
-function removeGroup(event) {
+function removeGroupConfirmed(event) {
     var groupName = event.srcElement.value;
 
     chrome.storage.sync.get('groups', function(items) {
@@ -285,7 +285,65 @@ function removeGroup(event) {
 
         deserializeGroups(serialized_groups);
         updateGroupsList();
+        var createGroupSection = document.getElementById('create-group-section');
+        createGroupSection.classList.remove("hidden");
     });
+}
+
+function removeGroup(event) {
+    clickedButton = event.srcElement;
+    var groupContainer = clickedButton.parentElement.parentElement;
+    var groupHeader = clickedButton.parentElement;
+    var groupName = clickedButton.value;
+
+    var groupsList = document.getElementById("groups-list");
+    var buttons = groupsList.getElementsByTagName("button");
+    for (var i = 0; i < buttons.length; i++) {
+        buttons[i].disabled = true;
+    }
+
+    while (groupHeader.childNodes.length > 0) {
+        groupHeader.removeChild(groupHeader.lastChild);
+    }
+
+    var createGroupSection = document.getElementById('create-group-section');
+    createGroupSection.classList.add("hidden");
+
+    var confirmationMessage = document.createElement("p");
+    var confirmationMessageText = document.createTextNode("Are you sure? This action cannot be undone.");
+    confirmationMessage.appendChild(confirmationMessageText);
+    confirmationMessage.classList += "remove-confirmation";
+
+    var buttonContainer = document.createElement("div");
+    buttonContainer.classList.add("remove-confirmation-buttons");
+
+    var cancelButton = document.createElement("button");
+    var cancelButtonText = document.createTextNode("Cancel");
+    cancelButton.appendChild(cancelButtonText);
+    cancelButton.value = groupName;
+    cancelButton.classList += "cancel-group-button";
+    cancelButton.addEventListener("click", function() {
+        cancelGroupChange();
+        createGroupSection.classList.remove("hidden");
+    });
+
+    var removeButton = document.createElement("button");
+    var removeButtonText = document.createTextNode("Remove");
+    removeButton.appendChild(removeButtonText);
+    removeButton.value = groupName;
+    removeButton.classList += "remove-button";
+    removeButton.addEventListener("click", removeGroupConfirmed);
+
+    var clearFloat = document.createElement("div");
+    clearFloat.classList += "clear-float";
+
+    groupHeader.appendChild(confirmationMessage);
+    
+    buttonContainer.appendChild(cancelButton);
+    buttonContainer.appendChild(removeButton);
+    groupHeader.appendChild(buttonContainer);
+    
+    groupHeader.appendChild(clearFloat);
 }
 
 function getGroup(groupName) {
@@ -319,7 +377,7 @@ function updateGroup(groupName) {
     createGroup(groupName, tabUrls);
 }
 
-function cancelEdit() {
+function cancelGroupChange() {
     updateGroupsList();
 }
 

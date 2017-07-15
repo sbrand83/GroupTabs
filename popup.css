@@ -26,7 +26,6 @@ body {
 
 }
 
-
 h1, h2 {
     color: #162955;
 }
@@ -138,4 +137,14 @@ button:disabled {
 
 button:disabled:hover {
     background-color: grey;
+}
+
+.remove-confirmation {
+    text-align: center;
+    margin-top: 0px;
+    margin-bottom: 5px;
+}
+
+.remove-confirmation-buttons {
+    text-align: center;
 }
