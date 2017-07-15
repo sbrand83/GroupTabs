@@ -365,7 +365,7 @@ function createUrlInput(index, urlValue, removable) {
 
     var urlInput = document.createElement("input");
     urlInput.type = "url";
-    urlInput.placeholder = "https://www.google.com";
+    urlInput.placeholder = "e.g. https://www.google.com";
     if (urlValue) {
         urlInput.value = urlValue;
     }
