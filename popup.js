@@ -375,6 +375,7 @@ function updateGroup(groupName) {
         tabUrls.push(groupUrls.childNodes[i].childNodes[0].value);
     }
     createGroup(groupName, tabUrls);
+    return true;
 }
 
 function cancelGroupChange() {
