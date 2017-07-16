@@ -1,7 +1,6 @@
 # GroupTabs
 Chrome extension to quickly open groups of commonly used tabs.
 
-### Available on the Chrome Web Store 
 [![Webstore link](chrome_webstore_image.png "Chrome Webstore Link")](https://chrome.google.com/webstore/detail/grouptabs/fojepcodbhkphgfpillkokfenpmgpela)
 
 ### Create groups of commonly used tabs
