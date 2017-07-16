@@ -94,6 +94,10 @@ input, option, select {
     color: #314166;
 }
 
+.float-left {
+    float: left;
+}
+
 .float-right {
     float: right;
 }
@@ -147,4 +151,13 @@ button:disabled:hover {
 
 .remove-confirmation-buttons {
     text-align: center;
+}
+
+#logo {
+    width: 100px;
+    height: 100px;
+}
+
+#group-title {
+    margin-top: 0px;
 }
